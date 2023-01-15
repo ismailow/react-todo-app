@@ -7,6 +7,7 @@ function TaskList(props) {
     <Task
       key={item.id}
       text={item.label}
+      time={item.time}
       status={item.status}
       createdDate={item.createdDate}
       onDelete={() => onDelete(item.id)}

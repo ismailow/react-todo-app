@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { formatDistanceToNow } from 'date-fns';
-import './task.css';
+
+import TaskTimer from '../TaskTimer/TaskTimer';
 
 export default function Task(props) {
   const { status, onToggleDone, text, createdDate, onDelete } = props;
@@ -13,7 +14,8 @@ export default function Task(props) {
           onInput={onToggleDone}
         />
         <label>
-          <span className="description">{text}</span>
+          <span className="title">{text}</span>
+          <TaskTimer />
           <span className="created">{formatDistanceToNow(createdDate)}</span>
         </label>
         <button

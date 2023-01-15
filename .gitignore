@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 /.vercel
+.eslintrc.js
+.eslintignore
+.prettierrc
