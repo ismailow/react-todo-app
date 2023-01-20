@@ -35,7 +35,16 @@ export default class Task extends Component {
   };
 
   render() {
-    const { status, onToggleDone, text, createdDate, onDelete, onEdit, onSubmitChange, timer } = this.props;
+    const {
+      status,
+      onToggleDone,
+      text,
+      createdDate,
+      onDelete,
+      onEdit,
+      onSubmitChange,
+      timer,
+    } = this.props;
     const { value, id } = this.state;
     return (
       <li className={status}>
@@ -79,8 +88,8 @@ export default class Task extends Component {
           <button
             className="icon icon-destroy"
             onClick={() => {
-              onDelete();
               clearInterval(this.interval);
+              onDelete();
             }}
             type="button"
           />

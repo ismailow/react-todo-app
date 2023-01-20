@@ -12,9 +12,27 @@ class App extends React.Component {
   state = {
     filter: 'all',
     todoData: [
-      { label: 'Learn React', status: 'task', createdDate: Date.now(), timer: 100, id: 1 },
-      { label: 'Dink coffee', status: 'task', createdDate: Date.now(), timer: 100, id: 2 },
-      { label: 'Create app', status: 'task', createdDate: Date.now(), timer: 100, id: 3 },
+      {
+        label: 'Learn React',
+        status: 'task',
+        createdDate: Date.now(),
+        timer: 100,
+        id: 1,
+      },
+      {
+        label: 'Dink coffee',
+        status: 'task',
+        createdDate: Date.now(),
+        timer: 100,
+        id: 2,
+      },
+      {
+        label: 'Create app',
+        status: 'task',
+        createdDate: Date.now(),
+        timer: 100,
+        id: 3,
+      },
     ],
   };
 
@@ -42,7 +60,11 @@ class App extends React.Component {
       const oldItem = todoData[index];
       const newValue = oldItem.status === 'task' ? 'completed' : 'task';
       const newItem = { ...oldItem, status: newValue };
-      const newTodoData = [...todoData.slice(0, index), newItem, ...todoData.slice(index + 1)];
+      const newTodoData = [
+        ...todoData.slice(0, index),
+        newItem,
+        ...todoData.slice(index + 1),
+      ];
       return {
         todoData: newTodoData,
       };
@@ -52,7 +74,10 @@ class App extends React.Component {
   deleteTask = (id) => {
     this.setState(({ todoData }) => {
       const index = todoData.findIndex((item) => item.id === id);
-      const newTodoData = [...todoData.slice(0, index), ...todoData.slice(index + 1)];
+      const newTodoData = [
+        ...todoData.slice(0, index),
+        ...todoData.slice(index + 1),
+      ];
       return {
         todoData: newTodoData,
       };
@@ -61,7 +86,9 @@ class App extends React.Component {
 
   onClearCompleted = () => {
     this.setState(({ todoData }) => {
-      const newTodoData = todoData.filter((item) => item.status !== 'completed');
+      const newTodoData = todoData.filter(
+        (item) => item.status !== 'completed'
+      );
       return {
         todoData: newTodoData,
       };
@@ -78,7 +105,11 @@ class App extends React.Component {
       const oldItem = todoData[index];
       const newValue = oldItem.status === 'task' ? 'editing' : 'task';
       const newItem = { ...oldItem, status: newValue };
-      const newTodoData = [...todoData.slice(0, index), newItem, ...todoData.slice(index + 1)];
+      const newTodoData = [
+        ...todoData.slice(0, index),
+        newItem,
+        ...todoData.slice(index + 1),
+      ];
       return {
         todoData: newTodoData,
       };
@@ -90,7 +121,11 @@ class App extends React.Component {
       const index = todoData.findIndex((item) => item.id === id);
       const editingTask = todoData[index];
       const newTask = { ...editingTask, label: newValue, status: 'task' };
-      const newTodoData = [...todoData.slice(0, index), newTask, ...todoData.slice(index + 1)];
+      const newTodoData = [
+        ...todoData.slice(0, index),
+        newTask,
+        ...todoData.slice(index + 1),
+      ];
       return {
         todoData: newTodoData,
       };
@@ -102,7 +137,11 @@ class App extends React.Component {
       const index = todoData.findIndex((item) => item.id === id);
       const timerTask = todoData[index];
       const timerStart = { ...timerTask, timer: newValue };
-      const newTodoData = [...todoData.slice(0, index), timerStart, ...todoData.slice(index + 1)];
+      const newTodoData = [
+        ...todoData.slice(0, index),
+        timerStart,
+        ...todoData.slice(index + 1),
+      ];
       return {
         todoData: newTodoData,
       };

@@ -2,7 +2,14 @@ import Task from '../Task';
 import './taskList.css';
 
 function TaskList(props) {
-  const { todos, onDelete, onToggleDone, onEdit, onSubmitChange, onStartTimer } = props;
+  const {
+    todos,
+    onDelete,
+    onToggleDone,
+    onEdit,
+    onSubmitChange,
+    onStartTimer,
+  } = props;
   const elements = todos.map((item) => (
     <Task
       key={item.id}

@@ -13,7 +13,7 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module'
   },
-  plugins: ['react', 'jsx-a11y', 'import', 'react-hooks', 'prettier'],
+  plugins: ['react', 'jsx-a11y', 'import', 'react-hooks'],
   rules: {
     'no-plusplus': 'off',
     'react/state-in-constructor': 0,
@@ -25,15 +25,13 @@ module.exports = {
     'react/prop-types': 0,
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'class-methods-use-this': 'off',
-    'prettier/prettier': ['error', {
-      "singleAttributePerLine": true,
-    }],
     'linebreak-style': [0, 'unix'],
     quotes: ['error', 'single'],
     'import/no-unresolved': [2, { caseSensitive: false }],
     'import/order': [2, {
       groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-               'newlines-between': 'always',}]
+      'newlines-between': 'always',
+    }]
   },
   settings: {
     version: 'detect',
