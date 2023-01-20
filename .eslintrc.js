@@ -19,6 +19,7 @@ module.exports = {
     'react/state-in-constructor': 0,
     'jsx-a11y/label-has-associated-control': 0,
     'jsx-a11y/control-has-associated-label': 0,
+    'jsx-a11y/no-noninteractive-element-interactions': 'off',
     'react/jsx-max-props-per-line': [1, { "when": "multiline" }],
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 0,

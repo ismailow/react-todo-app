@@ -12,19 +12,20 @@ class App extends React.Component {
   state = {
     filter: 'all',
     todoData: [
-      { label: 'Learn React', status: 'task', createdDate: Date.now(), id: 1 },
-      { label: 'Dink coffee', status: 'task', createdDate: Date.now(), id: 2 },
-      { label: 'Create app', status: 'task', createdDate: Date.now(), id: 3 },
+      { label: 'Learn React', status: 'task', createdDate: Date.now(), timer: 100, id: 1 },
+      { label: 'Dink coffee', status: 'task', createdDate: Date.now(), timer: 100, id: 2 },
+      { label: 'Create app', status: 'task', createdDate: Date.now(), timer: 100, id: 3 },
     ],
   };
 
   id = 10;
 
-  addItem = (text) => {
+  addItem = (text, timer) => {
     const newItem = {
       label: text,
       status: 'task',
       createdDate: Date.now(),
+      timer,
       id: this.id++,
     };
     this.setState(({ todoData }) => {
@@ -71,6 +72,43 @@ class App extends React.Component {
     this.setState({ filter });
   };
 
+  onEdit = (id) => {
+    this.setState(({ todoData }) => {
+      const index = todoData.findIndex((item) => item.id === id);
+      const oldItem = todoData[index];
+      const newValue = oldItem.status === 'task' ? 'editing' : 'task';
+      const newItem = { ...oldItem, status: newValue };
+      const newTodoData = [...todoData.slice(0, index), newItem, ...todoData.slice(index + 1)];
+      return {
+        todoData: newTodoData,
+      };
+    });
+  };
+
+  onSubmitChange = (newValue, id) => {
+    this.setState(({ todoData }) => {
+      const index = todoData.findIndex((item) => item.id === id);
+      const editingTask = todoData[index];
+      const newTask = { ...editingTask, label: newValue, status: 'task' };
+      const newTodoData = [...todoData.slice(0, index), newTask, ...todoData.slice(index + 1)];
+      return {
+        todoData: newTodoData,
+      };
+    });
+  };
+
+  onStartTimer = (newValue, id) => {
+    this.setState(({ todoData }) => {
+      const index = todoData.findIndex((item) => item.id === id);
+      const timerTask = todoData[index];
+      const timerStart = { ...timerTask, timer: newValue };
+      const newTodoData = [...todoData.slice(0, index), timerStart, ...todoData.slice(index + 1)];
+      return {
+        todoData: newTodoData,
+      };
+    });
+  };
+
   filterFunc(items, filter) {
     switch (filter) {
       case 'all':
@@ -97,6 +135,9 @@ class App extends React.Component {
             todos={visibleItems}
             onDelete={this.deleteTask}
             onToggleDone={this.onToggleDone}
+            onEdit={this.onEdit}
+            onSubmitChange={this.onSubmitChange}
+            onStartTimer={this.onStartTimer}
           />
           <Footer
             tasksCount={tasksCount}
