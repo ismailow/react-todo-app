@@ -10,23 +10,7 @@ export default class Task extends Component {
     value: this.props.text,
   };
 
-  startTimer = () => {
-    let { timer } = this.props;
-    const { id } = this.state;
-    const { onStartTimer } = this.props;
-    this.interval = setInterval(() => {
-      onStartTimer((timer -= 1), id);
-    }, 1000);
-  };
-
-  stopTimer = () => {
-    clearInterval(this.interval);
-  };
-
   renderTime = (time) => {
-    if (time === 0) {
-      clearInterval(this.interval);
-    }
     let minutes = Math.floor(time / 60);
     minutes = minutes < 10 ? `0${minutes}` : minutes;
     let secons = time % 60;
@@ -44,6 +28,8 @@ export default class Task extends Component {
       onEdit,
       onSubmitChange,
       timer,
+      onStartTimer,
+      onStopTimer
     } = this.props;
     const { value, id } = this.state;
     return (
@@ -54,7 +40,6 @@ export default class Task extends Component {
             type="checkbox"
             onInput={() => {
               onToggleDone();
-              clearInterval(this.interval);
             }}
           />
           <label>
@@ -67,13 +52,13 @@ export default class Task extends Component {
                 <button
                   className="icon icon-play"
                   type="button"
-                  onClick={this.startTimer}
+                  onClick={onStartTimer}
                   disabled={timer === 0}
                 />
                 <button
                   className="icon icon-pause"
                   type="button"
-                  onClick={this.stopTimer}
+                  onClick={onStopTimer}
                 />
                 {this.renderTime(timer)}
               </span>
@@ -88,7 +73,6 @@ export default class Task extends Component {
           <button
             className="icon icon-destroy"
             onClick={() => {
-              clearInterval(this.interval);
               onDelete();
             }}
             type="button"

@@ -9,6 +9,7 @@ function TaskList(props) {
     onEdit,
     onSubmitChange,
     onStartTimer,
+    onStopTimer
   } = props;
   const elements = todos.map((item) => (
     <Task
@@ -23,7 +24,8 @@ function TaskList(props) {
       onToggleDone={() => onToggleDone(item.id)}
       onEdit={() => onEdit(item.id)}
       onSubmitChange={onSubmitChange}
-      onStartTimer={onStartTimer}
+      onStartTimer={() => onStartTimer(item.id)}
+      onStopTimer={() => onStopTimer(item.id)}
     />
   ));
   return <ul className="todo-list">{elements}</ul>;

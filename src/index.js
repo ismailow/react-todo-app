@@ -34,6 +34,7 @@ class App extends React.Component {
         id: 3,
       },
     ],
+    todoTimers: [],
   };
 
   id = 10;
@@ -55,6 +56,7 @@ class App extends React.Component {
   };
 
   onToggleDone = (id) => {
+    this.stopTimer(id);
     this.setState(({ todoData }) => {
       const index = todoData.findIndex((item) => item.id === id);
       const oldItem = todoData[index];
@@ -72,6 +74,7 @@ class App extends React.Component {
   };
 
   deleteTask = (id) => {
+    this.stopTimer(id);
     this.setState(({ todoData }) => {
       const index = todoData.findIndex((item) => item.id === id);
       const newTodoData = [
@@ -132,21 +135,59 @@ class App extends React.Component {
     });
   };
 
-  onStartTimer = (newValue, id) => {
-    this.setState(({ todoData }) => {
-      const index = todoData.findIndex((item) => item.id === id);
-      const timerTask = todoData[index];
-      const timerStart = { ...timerTask, timer: newValue };
-      const newTodoData = [
-        ...todoData.slice(0, index),
-        timerStart,
-        ...todoData.slice(index + 1),
-      ];
-      return {
-        todoData: newTodoData,
+  startTimer = (id) => {
+    this.setState(({ todoTimers }) => {
+      const timersCopy = todoTimers.slice(0);
+      const interval = setInterval(() => {
+        this.setState(({ todoData }) => {
+          const index = todoData.findIndex((item) => item.id === id);
+          const timerTask = todoData[index];
+          timerTask.timer -= 1;
+          const newTodoData = [...todoData.slice(0, index), timerTask, ...todoData.slice(index + 1)];
+          if (timerTask.timer === 0) {
+            this.stopTimer(id);
+          }
+          return {
+            todoData: newTodoData
+          }
+        })
+      }, 1000);
+      const hasId = todoTimers.some((item) => item.id === id);
+      const newTimer = {
+        id,
+        interval
       };
+      let newTimerData
+      if (hasId) {
+        const index = timersCopy.findIndex((item) => item.id === id);
+        newTimerData = [...timersCopy];
+        newTimerData[index] = newTimer;
+      } else {
+        newTimerData = [...todoTimers, newTimer];
+      }
+      return {
+        todoTimers: newTimerData
+      }
     });
   };
+
+  stopTimer = (id) => {
+    this.setState(({ todoTimers }) => {
+      const index = todoTimers.findIndex((item) => item.id === id);
+      const hasTimer = todoTimers.some((item) => item.id === id);
+      let newTodoTimers;
+      if (hasTimer) {
+        const timer = todoTimers[index];
+        clearInterval(timer.interval);
+        newTodoTimers = [...todoTimers.slice(0, index), timer, ...todoTimers.slice(index + 1)];
+      } else {
+        newTodoTimers = [...todoTimers];
+      }
+      return {
+        todoTimers: newTodoTimers,
+      }
+    })
+  }
 
   filterFunc(items, filter) {
     switch (filter) {
@@ -176,7 +217,8 @@ class App extends React.Component {
             onToggleDone={this.onToggleDone}
             onEdit={this.onEdit}
             onSubmitChange={this.onSubmitChange}
-            onStartTimer={this.onStartTimer}
+            onStartTimer={this.startTimer}
+            onStopTimer={this.stopTimer}
           />
           <Footer
             tasksCount={tasksCount}
