@@ -8,6 +8,10 @@ export default class NewTaskForm extends React.Component {
     seconds: '',
   };
 
+  componentDidMount() {
+    this.labelInput.focus();
+  }
+
   onLabelChange = (e) => {
     this.setState(() => ({
       label: e.target.value,
@@ -35,6 +39,10 @@ export default class NewTaskForm extends React.Component {
     this.setState({ label: '', minutes: '', seconds: '' });
   };
 
+  onBlur = (e) => {
+    e.target.blur();
+  }
+
   render() {
     const { label, minutes, seconds } = this.state;
     return (
@@ -45,7 +53,11 @@ export default class NewTaskForm extends React.Component {
           if (e.key === 'Enter') {
             this.onSubmit(e);
           }
+          if (e.key === 'Escape') {
+            this.onBlur(e)
+          }
         }}
+        ref={(c) => { this.labelInput = c; }}
       >
         <input
           className="new-todo"
@@ -58,12 +70,14 @@ export default class NewTaskForm extends React.Component {
           placeholder="Min"
           onChange={this.onMinutesChange}
           value={minutes}
+          type="number"
         />
         <input
           className="new-todo-form__timer"
           placeholder="Sec"
           onChange={this.onSecondsChange}
           value={seconds}
+          type="number"
         />
       </form>
     );

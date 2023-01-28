@@ -137,54 +137,70 @@ class App extends React.Component {
 
   startTimer = (id) => {
     this.setState(({ todoTimers }) => {
-      const timersCopy = todoTimers.slice(0);
-      const interval = setInterval(() => {
-        this.setState(({ todoData }) => {
-          const index = todoData.findIndex((item) => item.id === id);
-          const timerTask = todoData[index];
-          timerTask.timer -= 1;
-          const newTodoData = [...todoData.slice(0, index), timerTask, ...todoData.slice(index + 1)];
-          if (timerTask.timer === 0) {
-            this.stopTimer(id);
-          }
-          return {
-            todoData: newTodoData
-          }
-        })
-      }, 1000);
-      const hasId = todoTimers.some((item) => item.id === id);
-      const newTimer = {
-        id,
-        interval
-      };
-      let newTimerData
-      if (hasId) {
-        const index = timersCopy.findIndex((item) => item.id === id);
-        newTimerData = [...timersCopy];
-        newTimerData[index] = newTimer;
+      const hasTimer = todoTimers.some((item) => item.id === id);
+      let newTodoTimers;
+      if (!hasTimer) {
+        const interval = setInterval(() => {
+          this.setState(({ todoData }) => {
+            const index = todoData.findIndex((item) => item.id === id);
+            const timerTask = todoData[index];
+            timerTask.timer -= 1;
+            const newTodoData = [...todoData.slice(0, index), timerTask, ...todoData.slice(index + 1)];
+            if (timerTask.timer === 0) {
+              this.stopTimer(id);
+            }
+            return {
+              todoData: newTodoData
+            }
+          })
+        }, 1000);
+        const newTimer = {
+          id,
+          interval,
+          started: true,
+        }
+        newTodoTimers = [...todoTimers, newTimer];
       } else {
-        newTimerData = [...todoTimers, newTimer];
+        const index = todoTimers.findIndex((item) => item.id === id);
+        if (!todoTimers[index].started) {
+          newTodoTimers = todoTimers.map((item, i) => 
+            i === index ? {...item, started: true} : item
+          );
+        } else {
+          newTodoTimers = [...todoTimers]
+        }
       }
       return {
-        todoTimers: newTimerData
-      }
-    });
+        todoTimers: newTodoTimers
+      };
+    })
   };
 
   stopTimer = (id) => {
     this.setState(({ todoTimers }) => {
+      // const index = todoTimers.findIndex((item) => item.id === id);
+      // const hasTimer = todoTimers.some((item) => item.id === id);
+      // let newTodoTimers;
+      // if (hasTimer) {
+      //   const timer = todoTimers[index];
+      //   clearInterval(timer.interval);
+      //   timer.started = false;
+      //   console.log(timer);
+      //   newTodoTimers = [...todoTimers.slice(0, index), timer, ...todoTimers.slice(index + 1)];
+      // } else {
+      //   newTodoTimers = [...todoTimers];
+      // }
+      // return {
+      //   todoTimers: newTodoTimers,
+      // }
       const index = todoTimers.findIndex((item) => item.id === id);
-      const hasTimer = todoTimers.some((item) => item.id === id);
-      let newTodoTimers;
-      if (hasTimer) {
-        const timer = todoTimers[index];
-        clearInterval(timer.interval);
-        newTodoTimers = [...todoTimers.slice(0, index), timer, ...todoTimers.slice(index + 1)];
-      } else {
-        newTodoTimers = [...todoTimers];
+      let newTodoTimers = [...todoTimers];
+      if (index !== -1) {
+        clearInterval(todoTimers[index].interval);
+        newTodoTimers = todoTimers.filter((item) => item.id !== id);
       }
       return {
-        todoTimers: newTodoTimers,
+        todoTimers: newTodoTimers
       }
     })
   }
