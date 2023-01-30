@@ -8,8 +8,14 @@ export default class NewTaskForm extends React.Component {
     seconds: '',
   };
 
+  constructor(props) {
+    super(props);
+    this.labelInput = React.createRef();
+    this.focusInput = this.focusInput.bind(this);
+  }
+
   componentDidMount() {
-    this.labelInput.focus();
+    this.focusInput();
   }
 
   onLabelChange = (e) => {
@@ -39,11 +45,16 @@ export default class NewTaskForm extends React.Component {
     this.setState({ label: '', minutes: '', seconds: '' });
   };
 
+  focusInput = () => {
+    this.labelInput.current.focus();
+  }
+
   onBlur = (e) => {
     e.target.blur();
   }
 
   render() {
+    console.log(this.labelInput);
     const { label, minutes, seconds } = this.state;
     return (
       <form
@@ -57,13 +68,13 @@ export default class NewTaskForm extends React.Component {
             this.onBlur(e)
           }
         }}
-        ref={(c) => { this.labelInput = c; }}
       >
         <input
           className="new-todo"
           onChange={this.onLabelChange}
           value={label}
           placeholder="What needs to be done?"
+          ref={ this.labelInput }
         />
         <input
           className="new-todo-form__timer"
