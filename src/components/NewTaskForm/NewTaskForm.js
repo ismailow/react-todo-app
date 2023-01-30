@@ -54,7 +54,6 @@ export default class NewTaskForm extends React.Component {
   }
 
   render() {
-    console.log(this.labelInput);
     const { label, minutes, seconds } = this.state;
     return (
       <form

@@ -18,6 +18,10 @@ export default class Task extends Component {
     return `${minutes}:${secons}`;
   };
 
+  onBlur = (e) => {
+    e.target.blur();
+  }
+
   render() {
     const {
       status,
@@ -68,7 +72,9 @@ export default class Task extends Component {
           <button
             className="icon icon-edit"
             type="button"
-            onClick={onEdit}
+            onClick={() => {
+              onEdit();
+            }}
           />
           <button
             className="icon icon-destroy"
@@ -88,7 +94,11 @@ export default class Task extends Component {
               if (event.key === 'Enter') {
                 onSubmitChange(event.target.value, id);
               }
+              if (event.key === 'Escape') {
+                this.onBlur(event);
+              }
             }}
+            autoFocus
           />
         ) : null}
       </li>
