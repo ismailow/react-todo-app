@@ -1,95 +1,74 @@
-import React from 'react';
+import { useState } from 'react';
 import './newTaskForm.css';
 
-export default class NewTaskForm extends React.Component {
-  state = {
-    label: '',
-    minutes: '',
-    seconds: '',
+function NewTaskForm(props) {
+  const [label, setLabel] = useState('');
+  const [minutes, setMinutes] = useState('');
+  const [seconds, setSeconds] = useState('');
+
+  const {onAddTask} = props;
+
+  const onLabelChange = (e) => {
+    setLabel(e.target.value);
   };
 
-  constructor(props) {
-    super(props);
-    this.labelInput = React.createRef();
-    this.focusInput = this.focusInput.bind(this);
-  }
-
-  componentDidMount() {
-    this.focusInput();
-  }
-
-  onLabelChange = (e) => {
-    this.setState(() => ({
-      label: e.target.value,
-    }));
+  const onMinutesChange = (e) => {
+    setMinutes(e.target.value);
   };
 
-  onMinutesChange = (e) => {
-    this.setState({
-      minutes: e.target.value,
-    });
+  const onSecondsChange = (e) => {
+    setSeconds(e.target.value);
   };
 
-  onSecondsChange = (e) => {
-    this.setState({
-      seconds: Number(e.target.value),
-    });
-  };
-
-  onSubmit = (e) => {
-    const { onAddTask } = this.props;
-    const { label, minutes, seconds } = this.state;
-    const timer = minutes * 60 + seconds;
+  const onSubmit = (e) => {
+    const timer = minutes * 60 + Number(seconds);
     e.preventDefault();
     onAddTask(label, timer);
-    this.setState({ label: '', minutes: '', seconds: '' });
+    setLabel('');
+    setMinutes('');
+    setSeconds('');
   };
 
-  focusInput = () => {
-    this.labelInput.current.focus();
-  }
-
-  onBlur = (e) => {
+  const onBlur = (e) => {
     e.target.blur();
   }
 
-  render() {
-    const { label, minutes, seconds } = this.state;
-    return (
-      <form
-        className="new-todo-form"
-        onSubmit={this.onSubmit}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            this.onSubmit(e);
-          }
-          if (e.key === 'Escape') {
-            this.onBlur(e)
-          }
-        }}
-      >
-        <input
-          className="new-todo"
-          onChange={this.onLabelChange}
-          value={label}
-          placeholder="What needs to be done?"
-          ref={ this.labelInput }
-        />
-        <input
-          className="new-todo-form__timer"
-          placeholder="Min"
-          onChange={this.onMinutesChange}
-          value={minutes}
-          type="number"
-        />
-        <input
-          className="new-todo-form__timer"
-          placeholder="Sec"
-          onChange={this.onSecondsChange}
-          value={seconds}
-          type="number"
-        />
-      </form>
-    );
-  }
+  return (
+    <form
+      className="new-todo-form"
+      onSubmit={onSubmit}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          onSubmit(e);
+        }
+        if (e.key === 'Escape') {
+          onBlur(e)
+        }
+      }}
+    >
+      <input
+        className="new-todo"
+        onChange={onLabelChange}
+        value={label}
+        placeholder="What needs to be done?"
+        autoFocus
+      />
+      <input
+        className="new-todo-form__timer"
+        placeholder="Min"
+        onChange={onMinutesChange}
+        value={minutes}
+        type="number"
+      />
+      <input
+        className="new-todo-form__timer"
+        placeholder="Sec"
+        onChange={onSecondsChange}
+        value={seconds}
+        type="number"
+      />
+    </form>
+  );
 }
+
+export default NewTaskForm;

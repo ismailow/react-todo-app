@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import Header from './components/Header';
@@ -8,150 +8,125 @@ import './index.css';
 
 const root = ReactDOM.createRoot(document.querySelector('#root'));
 
-class App extends React.Component {
-  state = {
-    filter: 'all',
-    todoData: [
-      {
-        label: 'Learn React',
-        status: 'task',
-        createdDate: Date.now(),
-        timer: 100,
-        id: 1,
-      },
-      {
-        label: 'Dink coffee',
-        status: 'task',
-        createdDate: Date.now(),
-        timer: 100,
-        id: 2,
-      },
-      {
-        label: 'Create app',
-        status: 'task',
-        createdDate: Date.now(),
-        timer: 100,
-        id: 3,
-      },
-    ],
-    todoTimers: [],
-  };
+function App() {
+  const [filter, setFilter] = useState('all');
+  const [todoData, setTodoData] = useState([
+    {
+      label: 'Learn React',
+      status: 'task',
+      createdDate: Date.now(),
+      timer: 100,
+      id: 1,
+    },
+    {
+      label: 'Dink coffee',
+      status: 'task',
+      createdDate: Date.now(),
+      timer: 100,
+      id: 2,
+    },
+    {
+      label: 'Create app',
+      status: 'task',
+      createdDate: Date.now(),
+      timer: 100,
+      id: 3,
+    },
+  ]);
+  const [todoTimers, setTodoTimers] = useState([]);
+  let taskId = 10;
 
-  id = 10;
-
-  addItem = (text, timer) => {
+  const addItem = (text, timer) => {
     const newItem = {
       label: text,
       status: 'task',
       createdDate: Date.now(),
       timer,
-      id: this.id++,
+      id: taskId++,
     };
-    this.setState(({ todoData }) => {
-      const newTodoData = [newItem, ...todoData];
-      return {
-        todoData: newTodoData,
-      };
+    setTodoData((data) => {
+      const newTodoData = [newItem, ...data];
+      return newTodoData;
+    })
+  };
+
+  const stopTimer = (id) => {
+    setTodoTimers((data) => {
+      const index = todoTimers.findIndex((item) => item.id === id);
+      let newTodoTimers = [...data];
+
+      if (index !== -1) {
+        clearInterval(data[index].interval);
+        newTodoTimers = data.filter((item) => item.id !== id);
+      }
+      return newTodoTimers;
+    })
+  };
+
+  const deleteTask = (id) => {
+    stopTimer(id);
+    setTodoData((data) => {
+      const newData = data.filter((item) => item.id !== id);
+      return newData;
+    })
+  };
+
+  const onToggleDone = (id) => {
+    stopTimer(id);
+    setTodoData((data) => {
+      const newData = data.map((item) => {
+        if (item.id === id) {
+          const newItem = {...item, status: item.status === 'task' ? 'completed' : 'task'}
+          return newItem
+        }
+        return item;
+      });
+      return newData;
+    })
+  };
+
+  const onEdit = (id) => {
+    setTodoData((data) => {
+      const newData = data.map((item) => {
+        if (item.id === id) {
+          const newItem = {...item, status: item.status === 'task' ? 'editing' : 'task'}
+          return newItem
+        }
+        return item;
+      })
+      return newData;
     });
   };
 
-  onToggleDone = (id) => {
-    this.stopTimer(id);
-    this.setState(({ todoData }) => {
-      const index = todoData.findIndex((item) => item.id === id);
-      const oldItem = todoData[index];
-      const newValue = oldItem.status === 'task' ? 'completed' : 'task';
-      const newItem = { ...oldItem, status: newValue };
-      const newTodoData = [
-        ...todoData.slice(0, index),
-        newItem,
-        ...todoData.slice(index + 1),
-      ];
-      return {
-        todoData: newTodoData,
-      };
+  const onSubmitChange = (newValue, id) => {
+    setTodoData((data) => {
+      const newData = data.map((item) => {
+        if (item.id === id) {
+          const newItem = {...item, label: newValue, status: 'task'};
+          return newItem;
+        }
+        return item;
+      })
+      return newData;
     });
   };
 
-  deleteTask = (id) => {
-    this.stopTimer(id);
-    this.setState(({ todoData }) => {
-      const index = todoData.findIndex((item) => item.id === id);
-      const newTodoData = [
-        ...todoData.slice(0, index),
-        ...todoData.slice(index + 1),
-      ];
-      return {
-        todoData: newTodoData,
-      };
-    });
-  };
-
-  onClearCompleted = () => {
-    this.setState(({ todoData }) => {
-      const newTodoData = todoData.filter(
-        (item) => item.status !== 'completed'
-      );
-      return {
-        todoData: newTodoData,
-      };
-    });
-  };
-
-  onFilterChange = (filter) => {
-    this.setState({ filter });
-  };
-
-  onEdit = (id) => {
-    this.setState(({ todoData }) => {
-      const index = todoData.findIndex((item) => item.id === id);
-      const oldItem = todoData[index];
-      const newValue = oldItem.status === 'task' ? 'editing' : 'task';
-      const newItem = { ...oldItem, status: newValue };
-      const newTodoData = [
-        ...todoData.slice(0, index),
-        newItem,
-        ...todoData.slice(index + 1),
-      ];
-      return {
-        todoData: newTodoData,
-      };
-    });
-  };
-
-  onSubmitChange = (newValue, id) => {
-    this.setState(({ todoData }) => {
-      const index = todoData.findIndex((item) => item.id === id);
-      const editingTask = todoData[index];
-      const newTask = { ...editingTask, label: newValue, status: 'task' };
-      const newTodoData = [
-        ...todoData.slice(0, index),
-        newTask,
-        ...todoData.slice(index + 1),
-      ];
-      return {
-        todoData: newTodoData,
-      };
-    });
-  };
-
-  startTimer = (id) => {
-    this.setState(({ todoTimers }) => {
-      const hasTimer = todoTimers.some((item) => item.id === id);
+  const startTimer = (id) => {
+    setTodoTimers((data) => {
+      const hasTimer = data.some((item) => item.id === id);
       let newTodoTimers;
+
       if (!hasTimer) {
         const interval = setInterval(() => {
-          this.setState(({ todoData }) => {
-            const index = todoData.findIndex((item) => item.id === id);
-            const timerTask = todoData[index];
-            timerTask.timer -= 1;
-            const newTodoData = [...todoData.slice(0, index), timerTask, ...todoData.slice(index + 1)];
-            if (timerTask.timer === 0) {
-              this.stopTimer(id);
-            }
-            return {
-              todoData: newTodoData
-            }
+          setTodoData((todos) => {
+            const newData = todos.map((item) => {
+              if (item.id === id) {
+                const newItem = {...item, timer: item.timer - 1}
+                return newItem;
+              }
+              return item;
+            })
+            return newData;
           })
         }, 1000);
         const newTimer = {
@@ -161,51 +136,31 @@ class App extends React.Component {
         }
         newTodoTimers = [...todoTimers, newTimer];
       } else {
-        const index = todoTimers.findIndex((item) => item.id === id);
-        if (!todoTimers[index].started) {
-          newTodoTimers = todoTimers.map((item, i) => 
+        const index = data.findIndex((item) => item.id === id);
+        if (!data[index].started) {
+          newTodoTimers = data.map((item, i) => 
             i === index ? {...item, started: true} : item
           );
         } else {
-          newTodoTimers = [...todoTimers]
+          newTodoTimers = [...todoTimers];
         }
       }
-      return {
-        todoTimers: newTodoTimers
-      };
+      return newTodoTimers;
     })
   };
 
-  stopTimer = (id) => {
-    this.setState(({ todoTimers }) => {
-      // const index = todoTimers.findIndex((item) => item.id === id);
-      // const hasTimer = todoTimers.some((item) => item.id === id);
-      // let newTodoTimers;
-      // if (hasTimer) {
-      //   const timer = todoTimers[index];
-      //   clearInterval(timer.interval);
-      //   timer.started = false;
-      //   console.log(timer);
-      //   newTodoTimers = [...todoTimers.slice(0, index), timer, ...todoTimers.slice(index + 1)];
-      // } else {
-      //   newTodoTimers = [...todoTimers];
-      // }
-      // return {
-      //   todoTimers: newTodoTimers,
-      // }
-      const index = todoTimers.findIndex((item) => item.id === id);
-      let newTodoTimers = [...todoTimers];
-      if (index !== -1) {
-        clearInterval(todoTimers[index].interval);
-        newTodoTimers = todoTimers.filter((item) => item.id !== id);
-      }
-      return {
-        todoTimers: newTodoTimers
-      }
-    })
-  }
+  const onFilterChange = (newFilter) => {
+    setFilter(newFilter)
+  };
 
-  filterFunc(items, filter) {
+  const onClearCompleted = () => {
+    setTodoData((data) => {
+      const newTodoData = data.filter((item) => item.status !== 'completed');
+      return newTodoData;
+    })
+  };
+
+  const filterFunc = (items) => {
     switch (filter) {
       case 'all':
         return items;
@@ -216,36 +171,32 @@ class App extends React.Component {
       default:
         return items;
     }
-  }
+  };
 
-  render() {
-    const { todoData, filter } = this.state;
-    const { filterFunc } = this;
-    const tasksCount = todoData.filter((item) => item.status === 'task').length;
-    const visibleItems = filterFunc(todoData, filter);
-    return (
-      <section className="todoapp">
-        <Header onAddTask={this.addItem} />
-        <section className="main">
-          <TaskList
-            todos={visibleItems}
-            onDelete={this.deleteTask}
-            onToggleDone={this.onToggleDone}
-            onEdit={this.onEdit}
-            onSubmitChange={this.onSubmitChange}
-            onStartTimer={this.startTimer}
-            onStopTimer={this.stopTimer}
-          />
-          <Footer
-            tasksCount={tasksCount}
-            onClearCompleted={this.onClearCompleted}
-            filter={filter}
-            onFilterChange={this.onFilterChange}
-          />
-        </section>
+  const tasksCount = todoData.filter((item) => item.status === 'task').length;
+  const visibleItems = filterFunc(todoData, filter);
+  return (
+    <section className="todoapp">
+      <Header onAddTask={addItem} />
+      <section className="main">
+        <TaskList
+          todos={visibleItems}
+          onDelete={deleteTask}
+          onToggleDone={onToggleDone}
+          onEdit={onEdit}
+          onSubmitChange={onSubmitChange}
+          onStartTimer={startTimer}
+          onStopTimer={stopTimer}
+        />
+        <Footer
+          tasksCount={tasksCount}
+          onClearCompleted={onClearCompleted}
+          filter={filter}
+          onFilterChange={onFilterChange}
+        />
       </section>
-    );
-  }
+    </section>
+  );
 }
 
 root.render(<App />);
